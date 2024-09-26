@@ -1,23 +1,32 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import React, { useState } from "react";
-import ClassItem from "../../components/classItem";
-import form from "./addClass";
+import React, { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ClassDetails from "../../components/classDetails";
 
 const Dashboard = () => {
   const { name } = useLocalSearchParams();
   const [activeSection, setActiveSection] = useState("Home");
+  const [classes, setClasses] = useState(null);
 
-  const getClass = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("class");
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-      // error reading value
-    }
-  };
+  useEffect(() => {
+    const fetchClasses = async () => {
+      const response = await fetch("http://192.168.0.204:4000/api/classes");
+      const json = await response.json();
+
+      if (response.ok) {
+        setClasses(json);
+      }
+    };
+
+    fetchClasses();
+  }, []);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -51,7 +60,7 @@ const Dashboard = () => {
       <Text style={styles.featureName}>{name}</Text>
     </TouchableOpacity>
   );
-  getClass();
+
   const ClassesSection = () => (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -63,10 +72,18 @@ const Dashboard = () => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Classes Section</Text>
       </View>
-
-      <View style={styles.contentContainer}>
-        <Text style={styles.contentTitle}>Upcoming Classes</Text>
-      </View>
+      <ScrollView style={styles.scroll}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.contentTitle}>Upcoming Classes</Text>
+          {classes &&
+            classes.map((classItem) => (
+              <ClassDetails
+                key={classItem._id}
+                classItem={classItem}
+              ></ClassDetails>
+            ))}
+        </View>
+      </ScrollView>
     </View>
   );
 
@@ -75,7 +92,7 @@ const Dashboard = () => {
       backgroundColor: "#0c9cd4",
       borderBottomLeftRadius: 20,
       borderBottomRightRadius: 20,
-      marginTop: 24,
+      marginTop: 44,
     },
     headerTitle: {
       fontSize: 24,
@@ -85,9 +102,14 @@ const Dashboard = () => {
       marginBottom: 20,
       marginTop: 4,
     },
-
-    featuresContainer: {
+    container: {
       flex: 1,
+    },
+    scroll: {
+      flexGrow: 1,
+      padding: 20,
+    },
+    featuresContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
       justifyContent: "space-around",
@@ -117,7 +139,7 @@ const Dashboard = () => {
       marginLeft: 11,
     },
     contentContainer: {
-      //flex: 1,
+      flexGrow: 1,
       padding: 20,
     },
     contentText: {

@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0c9cd4",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    marginTop: 24,
+    marginTop: 44,
   },
   headerTitle: {
     fontSize: 24,

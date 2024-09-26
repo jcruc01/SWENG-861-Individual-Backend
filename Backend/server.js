@@ -3,8 +3,11 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const classRoutes = require("./routes/classRoutes");
+const cors = require("cors");
 
 const App = express();
+
+App.use(cors({ origin: "http://localhost:8081" }));
 
 App.use(express.json());
 
