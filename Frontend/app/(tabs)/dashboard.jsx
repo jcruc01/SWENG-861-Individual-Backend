@@ -9,11 +9,13 @@ import Icon from "react-native-vector-icons/Ionicons";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import ClassDetails from "../../components/classDetails";
+import { useClassesContext } from "../../hooks/useClassesContext";
 
 const Dashboard = () => {
   const { name } = useLocalSearchParams();
   const [activeSection, setActiveSection] = useState("Home");
-  const [classes, setClasses] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const { classes, dispatch } = useClassesContext();
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -21,7 +23,7 @@ const Dashboard = () => {
       const json = await response.json();
 
       if (response.ok) {
-        setClasses(json);
+        dispatch({ type: "SET_CLASSES", payload: json });
       }
     };
 
@@ -32,6 +34,8 @@ const Dashboard = () => {
     switch (activeSection) {
       case "Classes":
         return <ClassesSection />;
+      case "IndividualClass":
+        return <IndividualClassSection classItem={selectedClass} />;
       default:
         return <HomeSection />;
     }
@@ -77,13 +81,37 @@ const Dashboard = () => {
           <Text style={styles.contentTitle}>Upcoming Classes</Text>
           {classes &&
             classes.map((classItem) => (
-              <ClassDetails
+              <TouchableOpacity
                 key={classItem._id}
-                classItem={classItem}
-              ></ClassDetails>
+                onPress={() => {
+                  setSelectedClass(classItem); // Set selected class
+                  setActiveSection("IndividualClass");
+                }}
+              >
+                <Text key={classItem._id} style={styles.classItem}>
+                  {classItem.classTitle}
+                </Text>
+              </TouchableOpacity>
             ))}
         </View>
       </ScrollView>
+    </View>
+  );
+
+  const IndividualClassSection = ({ classItem }) => (
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          onPress={() => setActiveSection("Classes")}
+          style={styles.backButton}
+        >
+          <Icon name="arrow-back" size={40} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{classItem.classTitle}</Text>
+      </View>
+      <View style={styles.contentContainer}>
+        <ClassDetails classItem={classItem} />
+      </View>
     </View>
   );
 
@@ -92,7 +120,7 @@ const Dashboard = () => {
       backgroundColor: "#0c9cd4",
       borderBottomLeftRadius: 20,
       borderBottomRightRadius: 20,
-      marginTop: 44,
+      marginTop: 24,
     },
     headerTitle: {
       fontSize: 24,
@@ -131,7 +159,9 @@ const Dashboard = () => {
       color: "#555",
     },
     backButton: {
-      margin: 3,
+      marginRight: 3,
+      width: 33,
+      height: 33,
     },
     backButtonText: {
       color: "white",
@@ -159,6 +189,9 @@ const Dashboard = () => {
       borderRadius: 10,
       padding: 15,
       marginVertical: 10,
+      textAlign: "center",
+      color: "white",
+      fontSize: 20,
     },
     classTitle: {
       color: "white",

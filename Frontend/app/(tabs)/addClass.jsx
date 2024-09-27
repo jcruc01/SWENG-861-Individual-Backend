@@ -3,13 +3,15 @@ import { React, useState, useEffect } from "react";
 import ClassForm from "../../components/classForm";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
+import { useClassesContext } from "../../hooks/useClassesContext";
 
 const addClass = () => {
+  const { dispatch } = useClassesContext();
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
-    courseTitle: "",
-    courseNumber: 0,
-    courseDescription: "",
+    classTitle: "",
+    classNumber: 0,
+    classDescription: "",
     startDate: "",
     endDate: "",
     professorName: "",
@@ -26,22 +28,22 @@ const addClass = () => {
     let errors = {};
 
     // Validate Course Title field
-    if (!form.courseTitle.trim()) {
-      errors.courseTitle = "Course Title is required.";
+    if (!form.classTitle.trim()) {
+      errors.classTitle = "Course Title is required.";
     }
 
     // Validate course number field
-    if (!form.courseNumber) {
-      errors.courseNumber = "Course Number is required.";
-    } else if (isNaN(form.courseNumber)) {
-      errors.courseNumber = "Must input a number.";
+    if (!form.classNumber) {
+      errors.classNumber = "Course Number is required.";
+    } else if (isNaN(form.classNumber)) {
+      errors.classNumber = "Must input a number.";
     }
 
     // Validate course description field
-    if (!form.courseDescription.trim()) {
-      errors.courseDescription = "Course Description is required.";
-    } else if (form.courseDescription.length > 150) {
-      errors.courseDescription =
+    if (!form.classDescription.trim()) {
+      errors.classDescription = "Course Description is required.";
+    } else if (form.classDescription.length > 150) {
+      errors.classDescription =
         "Course Description must be less than 150 characters.";
     }
     // Validate start date field
@@ -80,21 +82,53 @@ const addClass = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      console.warn("Submitted");
-      setForm({
-        courseTitle: "",
-        courseNumber: 0,
-        courseDescription: "",
-        startDate: "",
-        endDate: "",
-        professorName: "",
-        areaOfStudy: "",
-        daysOfWeek: "",
-        hoursOfDay: "",
-      });
-      setErrors({});
+      const classObj = {
+        classTitle: form.classTitle,
+        classNumber: form.classNumber,
+        classDescription: form.classDescription,
+        startDate: form.startDate,
+        endDate: form.endDate,
+        professorName: form.professorName,
+        areaOfStudy: form.areaOfStudy,
+        daysOfWeek: form.daysOfWeek,
+        hoursOfDay: form.hoursOfDay,
+      };
+
+      try {
+        const response = await fetch("http://192.168.0.204:4000/api/classes", {
+          method: "POST",
+          body: JSON.stringify(classObj),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+          console.log("Error from server:", json);
+          setErrors(json.error || {});
+        } else {
+          console.log("New class added", json);
+          setForm({
+            classTitle: "",
+            classNumber: 0,
+            classDescription: "",
+            startDate: "",
+            endDate: "",
+            professorName: "",
+            areaOfStudy: "",
+            daysOfWeek: "",
+            hoursOfDay: "",
+          });
+          setErrors({});
+          dispatch({ type: "CREATE_CLASS", payload: json });
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      }
     }
   };
 
@@ -106,31 +140,31 @@ const addClass = () => {
       <ScrollView style={styles.scroll}>
         <View>
           <ClassForm
-            title="Course Title"
-            value={form.courseTitle}
+            title="Class Title"
+            value={form.classTitle || ""}
             placeholder={"e.g: Software Construction"}
-            handleChangeText={(e) => setForm({ ...form, courseTitle: e })}
+            handleChangeText={(e) => setForm({ ...form, classTitle: e })}
           ></ClassForm>
-          {errors.courseTitle ? (
-            <Text style={styles.errors}>{errors.courseTitle}</Text>
+          {errors.classTitle ? (
+            <Text style={styles.errors}>{errors.classTitle}</Text>
           ) : null}
           <ClassForm
-            title="Course Number"
-            value={form.courseNumber}
+            title="Class Number"
+            value={form.classNumber}
             placeholder={"e.g: 861"}
-            handleChangeText={(e) => setForm({ ...form, courseNumber: e })}
+            handleChangeText={(e) => setForm({ ...form, classNumber: e })}
           ></ClassForm>
-          {errors.courseNumber ? (
-            <Text style={styles.errors}>{errors.courseNumber}</Text>
+          {errors.classNumber ? (
+            <Text style={styles.errors}>{errors.classNumber}</Text>
           ) : null}
           <ClassForm
-            title="Course Description"
-            value={form.courseDescription}
+            title="Class Description"
+            value={form.classDescription}
             placeholder={"Short description of course"}
-            handleChangeText={(e) => setForm({ ...form, courseDescription: e })}
+            handleChangeText={(e) => setForm({ ...form, classDescription: e })}
           ></ClassForm>
-          {errors.courseDescription ? (
-            <Text style={styles.errors}>{errors.courseDescription}</Text>
+          {errors.classDescription ? (
+            <Text style={styles.errors}>{errors.classDescription}</Text>
           ) : null}
           <ClassForm
             title="Start Date"
@@ -202,7 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0c9cd4",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    marginTop: 44,
+    marginTop: 24,
   },
   headerTitle: {
     fontSize: 24,

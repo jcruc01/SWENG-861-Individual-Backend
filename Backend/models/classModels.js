@@ -17,11 +17,11 @@ const classSchema = new Schema(
       required: true,
     },
     startDate: {
-      type: Number,
+      type: String,
       required: true,
     },
     endDate: {
-      type: Number,
+      type: String,
       required: true,
     },
     professorName: {
