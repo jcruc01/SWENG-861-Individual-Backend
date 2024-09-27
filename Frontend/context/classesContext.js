@@ -12,6 +12,10 @@ export const classesReducer = (state, action) => {
       return {
         classes: [action.payload, ...state.classes],
       };
+    case "DELETE_CLASS":
+      return {
+        classes: state.classes.filter((c) => c._id !== action.payload._id),
+      };
     default:
       return state;
   }

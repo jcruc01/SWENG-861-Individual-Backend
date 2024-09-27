@@ -64,7 +64,17 @@ const Dashboard = () => {
       <Text style={styles.featureName}>{name}</Text>
     </TouchableOpacity>
   );
+  const handleDeletePress = async (classItem) => {
+    const response = await fetch(
+      "http://192.168.0.204:4000/api/classes/" + classItem._id,
+      { method: "DELETE" }
+    );
+    const json = await response.json();
 
+    if (response.ok) {
+      dispatch({ type: "DELETE_CLASS", payload: json });
+    }
+  };
   const ClassesSection = () => (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -90,6 +100,11 @@ const Dashboard = () => {
               >
                 <Text key={classItem._id} style={styles.classItem}>
                   {classItem.classTitle}
+                  <TouchableOpacity
+                    onPress={() => handleDeletePress(classItem)}
+                  >
+                    <Text style={styles.deleteClass}>Delete</Text>
+                  </TouchableOpacity>
                 </Text>
               </TouchableOpacity>
             ))}
@@ -202,6 +217,9 @@ const Dashboard = () => {
       color: "white",
       fontSize: 14,
       marginTop: 5,
+    },
+    deleteClass: {
+      marginLeft: 4,
     },
   });
 
