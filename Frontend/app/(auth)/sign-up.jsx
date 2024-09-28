@@ -6,12 +6,6 @@ import LoginForm from "../../components/loginForm";
 import CustomButton from "../../components/CustomButton";
 import { Link, router } from "expo-router";
 
-const mockUser = {
-  username: "joe",
-  password: "Password1!",
-  name: "Joe",
-};
-
 const SignIn = () => {
   const [form, setForm] = useState({
     username: "",
@@ -68,10 +62,10 @@ const SignIn = () => {
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>
         <Image source={Logo} style={styles.image} />
-        <Text style={styles.text}>Log In</Text>
+
         <LoginForm
           title="Username"
-          placeholder="Username"
+          placeholder="Create Username"
           value={form.username}
           handleChangeText={(e) => setForm({ ...form, username: e })}
         />
@@ -80,7 +74,7 @@ const SignIn = () => {
         ) : null}
         <LoginForm
           title="Password"
-          placeholder="Password"
+          placeholder="Create Password"
           value={form.password}
           handleChangeText={(e) => setForm({ ...form, password: e })}
         />
@@ -90,7 +84,7 @@ const SignIn = () => {
         <View style={styles.buttonContainer}>
           <CustomButton
             handlePress={submit}
-            title="Sign In"
+            title="Sign Up"
             isLoading={isSubmitting}
             style={styles.button}
           />

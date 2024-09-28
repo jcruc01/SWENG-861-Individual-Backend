@@ -4,13 +4,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
+  StatusBar,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import ClassDetails from "../../components/classDetails";
 import { useClassesContext } from "../../hooks/useClassesContext";
-
+import Logo from "../../assets/delete-symbol-option.png";
 const Dashboard = () => {
   const { name } = useLocalSearchParams();
   const [activeSection, setActiveSection] = useState("Home");
@@ -92,20 +94,24 @@ const Dashboard = () => {
           {classes &&
             classes.map((classItem) => (
               <TouchableOpacity
+                style={styles.classItemContainer}
                 key={classItem._id}
                 onPress={() => {
                   setSelectedClass(classItem); // Set selected class
                   setActiveSection("IndividualClass");
                 }}
               >
-                <Text key={classItem._id} style={styles.classItem}>
-                  {classItem.classTitle}
+                <View style={styles.classItemContent}>
+                  <Text key={classItem._id} style={styles.classTitle}>
+                    {classItem.classTitle}
+                  </Text>
                   <TouchableOpacity
                     onPress={() => handleDeletePress(classItem)}
+                    style={styles.deleteButton}
                   >
-                    <Text style={styles.deleteClass}>Delete</Text>
+                    <Image source={Logo} style={styles.image} />
                   </TouchableOpacity>
-                </Text>
+                </View>
               </TouchableOpacity>
             ))}
         </View>
@@ -135,7 +141,9 @@ const Dashboard = () => {
       backgroundColor: "#0c9cd4",
       borderBottomLeftRadius: 20,
       borderBottomRightRadius: 20,
-      marginTop: 24,
+
+      width: "100%",
+      paddingTop: 40,
     },
     headerTitle: {
       fontSize: 24,
@@ -187,6 +195,19 @@ const Dashboard = () => {
       flexGrow: 1,
       padding: 20,
     },
+    classItemContainer: {
+      padding: 15,
+      marginBottom: 10,
+      backgroundColor: "#f0f4f8",
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: "#ddd",
+      shadowColor: "#000",
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 3,
+    },
     contentText: {
       fontSize: 16,
       marginBottom: 10,
@@ -208,10 +229,16 @@ const Dashboard = () => {
       color: "white",
       fontSize: 20,
     },
+    classItemContent: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
     classTitle: {
-      color: "white",
       fontSize: 18,
       fontWeight: "bold",
+      color: "#333",
+      flexShrink: 1,
     },
     classDescription: {
       color: "white",
@@ -220,10 +247,24 @@ const Dashboard = () => {
     },
     deleteClass: {
       marginLeft: 4,
+      width: 22,
+      height: 22,
+    },
+    deleteButton: {
+      marginLeft: 10,
+    },
+    image: {
+      width: 24,
+      height: 24,
     },
   });
 
-  return <View style={styles.container}>{renderSection()}</View>;
+  return (
+    <>
+      <StatusBar barStyle="light-content" />
+      <View style={styles.container}>{renderSection()}</View>
+    </>
+  );
 };
 
 export default Dashboard;

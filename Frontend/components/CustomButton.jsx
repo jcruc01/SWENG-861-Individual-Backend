@@ -3,25 +3,32 @@ import React from "react";
 
 const CustomButton = ({ title, handlePress }) => {
   return (
-    <TouchableOpacity
-      style={styles.button}
-      onPress={handlePress}
-      activeOpacity={0.8}
-    >
-      <Text style={styles.text}>{title}</Text>
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handlePress}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.text}>{title}</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 export default CustomButton;
 
 const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
   button: {
     backgroundColor: "#0c9cd4",
     justifyContent: "center",
     alignItems: "center",
     padding: 5,
-    marginTop: 1,
     width: 133,
     height: 44,
     borderRadius: 10,
@@ -29,6 +36,6 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: "bold",
     color: "white",
-    fontSize: 22,
+    fontSize: 15,
   },
 });

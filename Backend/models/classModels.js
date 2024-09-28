@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
-
 const Schema = mongoose.Schema;
+
+const classesDBConnection = mongoose.createConnection(
+  process.env.MONGO_URI_CLASSES
+);
 
 const classSchema = new Schema(
   {
@@ -44,4 +47,7 @@ const classSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Class", classSchema);
+module.exports = {
+  classesDBConnection,
+  Class: classesDBConnection.model("Class", classSchema),
+};

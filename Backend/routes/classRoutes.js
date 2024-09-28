@@ -6,6 +6,7 @@ const {
   deleteClass,
   updateClass,
 } = require("../controllers/classController");
+
 const router = express.Router();
 
 router.get("/", getAllClasses);

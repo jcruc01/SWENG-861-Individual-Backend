@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { React, useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView, StatusBar } from "react-native";
+import { React, useState, useRef } from "react";
 import ClassForm from "../../components/classForm";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
@@ -7,10 +7,11 @@ import { useClassesContext } from "../../hooks/useClassesContext";
 
 const addClass = () => {
   const { dispatch } = useClassesContext();
+
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     classTitle: "",
-    classNumber: 0,
+    classNumber: "",
     classDescription: "",
     startDate: "",
     endDate: "",
@@ -134,6 +135,8 @@ const addClass = () => {
 
   return (
     <>
+      <StatusBar barStyle="light-content" />
+
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Class Form</Text>
       </View>
@@ -141,7 +144,7 @@ const addClass = () => {
         <View>
           <ClassForm
             title="Class Title"
-            value={form.classTitle || ""}
+            value={form.classTitle}
             placeholder={"e.g: Software Construction"}
             handleChangeText={(e) => setForm({ ...form, classTitle: e })}
           ></ClassForm>
@@ -171,6 +174,7 @@ const addClass = () => {
             value={form.startDate}
             placeholder={"e.g: 08/26/2024"}
             handleChangeText={(e) => setForm({ ...form, startDate: e })}
+            isDate={true}
           ></ClassForm>
           {errors.startDate ? (
             <Text style={styles.errors}>{errors.startDate}</Text>
@@ -180,6 +184,7 @@ const addClass = () => {
             value={form.endDate}
             placeholder={"e.g: 10/21/2024"}
             handleChangeText={(e) => setForm({ ...form, endDate: e })}
+            isDate={true}
           ></ClassForm>
           {errors.endDate ? (
             <Text style={styles.errors}>{errors.endDate}</Text>
@@ -222,7 +227,7 @@ const addClass = () => {
           ) : null}
         </View>
       </ScrollView>
-      <View style={styles.button}>
+      <View style={styles.buttonContainer}>
         <CustomButton title={"Submit Form"} handlePress={handleSubmit} />
       </View>
     </>
@@ -236,7 +241,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#0c9cd4",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    marginTop: 24,
+
+    paddingTop: 40,
   },
   headerTitle: {
     fontSize: 24,
@@ -247,13 +253,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  button: {
-    height: 33,
-    marginLeft: 144,
-    marginBottom: 30,
-    marginTop: 11,
-    justifyContent: "center",
-  },
+  buttonContainer: { margin: 5 },
   errors: {
     color: "red",
     margin: 5,

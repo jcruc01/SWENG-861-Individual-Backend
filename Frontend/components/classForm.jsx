@@ -14,19 +14,48 @@ const classForm = ({
   value,
   placeholder,
   handleChangeText,
+  isDate = false,
   ...props
 }) => {
   const [inputHeight, setInputHeight] = useState(40);
+  const formatDate = (text) => {
+    // Remove all non-digit characters
+    const cleaned = text.replace(/[^\d]/g, "");
 
+    // Format as MM/DD/YYYY
+    let formatted = cleaned;
+    if (cleaned.length >= 3 && cleaned.length <= 4) {
+      formatted = cleaned.slice(0, 2) + "/" + cleaned.slice(2);
+    } else if (cleaned.length >= 5) {
+      formatted =
+        cleaned.slice(0, 2) +
+        "/" +
+        cleaned.slice(2, 4) +
+        "/" +
+        cleaned.slice(4, 8);
+    }
+
+    // Limit input to 10 characters (MM/DD/YYYY)
+    return formatted.slice(0, 10);
+  };
+
+  const handleDateInput = (text) => {
+    const formattedDate = formatDate(text);
+    handleChangeText(formattedDate);
+  };
   return (
-    <View>
-      <Text style={styles.userForm}>{title}</Text>
-      <View style={[styles.inputBox, { height: inputHeight }]}>
+    <View style={styles.container}>
+      <Text style={styles.label}>{title}</Text>
+      <View style={[styles.inputContainer]}>
         <TextInput
-          style={[styles.input, { height: inputHeight }]}
-          multiline
+          style={[styles.input]}
+          multiline={true}
+          value={value}
           placeholder={placeholder}
-          onChangeText={handleChangeText}
+          placeholderTextColor="#888"
+          onChangeText={isDate ? handleDateInput : handleChangeText} // Use the date formatter if it's a date field
+          keyboardType={isDate ? "numeric" : "default"} // Numeric keyboard for dates
+          maxLength={isDate ? 10 : undefined} // Limit date input to 10 characters
           onContentSizeChange={(event) =>
             setInputHeight(event.nativeEvent.contentSize.height)
           }
@@ -39,29 +68,33 @@ const classForm = ({
 export default classForm;
 
 const styles = StyleSheet.create({
-  userForm: {
-    padding: 2,
-    textAlign: "center",
-    fontWeight: "bold",
+  container: {
+    marginBottom: 16,
+    paddingHorizontal: 10,
   },
-  inputBox: {
-    margin: 12,
-    borderWidth: 0.5,
-    padding: 1,
-    backgroundColor: "#cae4e6",
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 6,
+    textAlign: "left",
+  },
+  inputContainer: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    backgroundColor: "#f9f9f9",
     borderRadius: 10,
-
-    multiline: true,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    elevation: 2, // Add shadow for iOS and Android
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   input: {
-    color: "black",
-    marginLeft: 6,
-    fontSize: 17,
-    textAlign: "center",
-  },
-  eye: {
-    marginTop: 10,
-    marginRight: 5,
-    margin: -22,
+    fontSize: 16,
+    color: "#333",
+    textAlignVertical: "top", // Ensure text starts at the top
   },
 });

@@ -1,4 +1,4 @@
-const Class = require("../models/classModels");
+const { Class } = require("../models/classModels");
 const mongoose = require("mongoose");
 //get all classes
 const getAllClasses = async (req, res) => {
