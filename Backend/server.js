@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const classRoutes = require("./routes/classRoutes");
 const userRoutes = require("./routes/userRoutes");
+const loginRoute = require("./routes/loginRoute");
 const cors = require("cors");
 const { classesDBConnection } = require("./models/classModels");
 const { usersDBConnection } = require("./models/userModels");
@@ -14,6 +15,7 @@ App.use(express.json());
 
 App.use("/api/classes", classRoutes);
 App.use("/api/users", userRoutes);
+App.use("/api/login", loginRoute);
 
 //db
 Promise.all([classesDBConnection.readyState, usersDBConnection.readyState])

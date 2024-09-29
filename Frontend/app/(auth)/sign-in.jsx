@@ -5,12 +5,7 @@ import Logo from "../../assets/logo.png";
 import LoginForm from "../../components/loginForm";
 import CustomButton from "../../components/CustomButton";
 import { Link, router } from "expo-router";
-
-const mockUser = {
-  username: "joe",
-  password: "Password1!",
-  name: "Joe",
-};
+import { TouchableOpacity } from "react-native";
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -20,24 +15,41 @@ const SignIn = () => {
 
   const [isSubmitting, setisSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const submit = () => {
+  const submit = async () => {
     let errors = {};
-    if (validateForm()) {
-      if (
-        form.username === mockUser.username &&
-        form.password === mockUser.password
-      ) {
+    if (!validateForm()) return;
+    try {
+      const response = await fetch("http://192.168.0.204:4000/api/login", {
+        method: "POST",
+        body: JSON.stringify({
+          username: form.username,
+          password: form.password,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await response.json();
+
+      if (!response.ok) {
+        if (json.error === "Invalid Password") {
+          errors.password = "Wrong Password";
+        } else if (json.error === "User not found") {
+          errors.username = "User does not exist";
+        }
+        setErrors(errors);
+      } else {
         setErrors({});
         router.push({
           pathname: "../(tabs)/dashboard",
-          params: { name: mockUser.name },
+          params: { name: json.name },
         });
-      } else if (form.password != mockUser.password) {
-        errors.password = "Wrong Password";
-        setErrors(errors);
       }
+    } catch (err) {
+      console.error("Error:", err);
     }
   };
+
   const validatePassword = (password) => {
     // Regex to match mm/dd/yyyy format
     const regex =
@@ -87,6 +99,19 @@ const SignIn = () => {
         {errors.password ? (
           <Text style={styles.errors}>{errors.password}</Text>
         ) : null}
+        <View style={styles.notUserContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/sign-up",
+              })
+            }
+          >
+            <Text style={styles.notUserText}>
+              Not a user? Click here to sign up!
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.buttonContainer}>
           <CustomButton
             handlePress={submit}
@@ -126,7 +151,12 @@ const styles = StyleSheet.create({
   },
   errors: {
     color: "red",
-
     padding: 5,
   },
+  notUserContainer: {
+    marginTop: 11,
+    width: "100%",
+  },
+
+  notUserText: {},
 });

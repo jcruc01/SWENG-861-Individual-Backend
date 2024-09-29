@@ -4,34 +4,62 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "../../assets/logo.png";
 import LoginForm from "../../components/loginForm";
 import CustomButton from "../../components/CustomButton";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
+import { useUsersContext } from "../../hooks/useUsersContext";
 
-const SignIn = () => {
+const SignUp = () => {
+  const { dispatch } = useUsersContext();
   const [form, setForm] = useState({
     username: "",
     password: "",
+    name: "",
   });
 
   const [isSubmitting, setisSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const submit = () => {
-    let errors = {};
-    if (validateForm()) {
-      if (
-        form.username === mockUser.username &&
-        form.password === mockUser.password
-      ) {
-        setErrors({});
-        router.push({
-          pathname: "../(tabs)/dashboard",
-          params: { name: mockUser.name },
+
+  const submit = async () => {
+    if (!validateForm()) return;
+    setisSubmitting(true);
+
+    const userObj = {
+      username: form.username,
+      password: form.password,
+      name: form.name,
+    };
+
+    try {
+      const response = await fetch("http://192.168.0.204:4000/api/users", {
+        method: "POST",
+        body: JSON.stringify(userObj),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const json = await response.json();
+
+      if (!response.ok) {
+        console.log("Error from server:", json);
+        setErrors(json.error || {});
+      } else {
+        console.log("New user added", json);
+        setForm({
+          username: "",
+          password: "",
+          name: "",
         });
-      } else if (form.password != mockUser.password) {
-        errors.password = "Wrong Password";
-        setErrors(errors);
+        setErrors({});
+        dispatch({ type: "CREATE_USER", payload: json });
+        router.push({
+          pathname: "/sign-in",
+        });
       }
+    } catch (err) {
+      console.error("Error:", err);
     }
   };
+
   const validatePassword = (password) => {
     // Regex to match mm/dd/yyyy format
     const regex =
@@ -62,7 +90,12 @@ const SignIn = () => {
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>
         <Image source={Logo} style={styles.image} />
-
+        <LoginForm
+          title="Name"
+          placeholder="Enter Name"
+          value={form.name}
+          handleChangeText={(e) => setForm({ ...form, name: e })}
+        />
         <LoginForm
           title="Username"
           placeholder="Create Username"
@@ -94,7 +127,7 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
 
 const styles = StyleSheet.create({
   main: {

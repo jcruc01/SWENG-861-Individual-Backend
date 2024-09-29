@@ -2,7 +2,6 @@ import { View, Text, StyleSheet, ScrollView, StatusBar } from "react-native";
 import { React, useState, useRef } from "react";
 import ClassForm from "../../components/classForm";
 import CustomButton from "../../components/CustomButton";
-import { router } from "expo-router";
 import { useClassesContext } from "../../hooks/useClassesContext";
 
 const addClass = () => {

@@ -1,12 +1,8 @@
-import { View, Text } from "react-native";
 import { Tabs, Redirect } from "expo-router";
 
 import { Ionicons } from "@expo/vector-icons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { ClassesContextProvider } from "../../context/classesContext";
-
-const classes = {};
 
 const TabsLayout = () => {
   return (
