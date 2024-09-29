@@ -19,6 +19,8 @@ const authenticateLogin = async (req, res) => {
       return res.status(401).json({ error: "Invalid Password" });
     }
 
+    req.session.user = { id: user._id, username: user.username };
+
     // If the username and password are correct, return user data (exclude password)
     return res.status(200).json({
       name: user.name,

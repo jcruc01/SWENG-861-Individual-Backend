@@ -6,17 +6,17 @@ const {
   deleteClass,
   updateClass,
 } = require("../controllers/classController");
-
+const isAuthenticated = require("../middleware/isAuthenticated");
 const router = express.Router();
 
-router.get("/", getAllClasses);
+router.get("/", isAuthenticated, getAllClasses);
 
-router.get("/:id", getClass);
+router.get("/:id", isAuthenticated,  getClass);
 
-router.post("/", createClass);
+router.post("/", isAuthenticated,   createClass);
 
-router.delete("/:id", deleteClass);
+router.delete("/:id", isAuthenticated,   deleteClass);
 
-router.patch("/:id", updateClass);
+router.patch("/:id", isAuthenticated,   updateClass);
 
 module.exports = router;

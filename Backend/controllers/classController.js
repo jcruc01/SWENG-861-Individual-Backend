@@ -2,17 +2,19 @@ const { Class } = require("../models/classModels");
 const mongoose = require("mongoose");
 //get all classes
 const getAllClasses = async (req, res) => {
-  const allClasses = await Class.find({}).sort({ createdAt: -1 });
+  const userID = req.user._id;
+  const allClasses = await Class.find({userID}).sort({ createdAt: -1 });
   res.status(200).json(allClasses);
 };
 // get single class
 const getClass = async (req, res) => {
   const { id } = req.params;
+  const userID = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Class does not exist" });
   }
-  const singleClass = await Class.findById(id);
+  const singleClass = await Class.findOne({ _id: id, userId });
 
   if (!singleClass) {
     return res.status(404).json({ error: "Class does not exist" });
@@ -35,6 +37,8 @@ const createClass = async (req, res) => {
     hoursOfDay,
   } = req.body;
 
+  const userId = req.user._id;
+
   try {
     const newClass = await Class.create({
       classTitle,
@@ -56,12 +60,13 @@ const createClass = async (req, res) => {
 //delete class
 const deleteClass = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Class does not exist" });
   }
 
-  const deleteClass = await Class.findOneAndDelete({ _id: id });
+  const deleteClass = await Class.findOneAndDelete({ _id: id, userID });
 
   if (!deleteClass) {
     return res.status(404).json({ error: "Class does not exist" });
@@ -72,16 +77,16 @@ const deleteClass = async (req, res) => {
 //update class
 const updateClass = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Class does not exist" });
   }
 
   const updateClass = await Class.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
+    { _id: id, userId },
+    { ...req.body },
+    { new: true } 
   );
 
   if (!updateClass) {
