@@ -3,7 +3,6 @@ import { Tabs, Redirect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { ClassesContextProvider } from "../../context/classesContext";
-
 const TabsLayout = () => {
   return (
     <ClassesContextProvider>

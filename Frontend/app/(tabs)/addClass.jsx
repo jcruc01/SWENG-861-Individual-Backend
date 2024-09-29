@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet, ScrollView, StatusBar } from "react-native";
-import { React, useState, useRef } from "react";
+import { React, useState, useEffect } from "react";
 import ClassForm from "../../components/classForm";
 import CustomButton from "../../components/CustomButton";
 import { useClassesContext } from "../../hooks/useClassesContext";
+import { useUsersContext } from "../../hooks/useUsersContext";
 
 const addClass = () => {
   const { dispatch } = useClassesContext();
+  const { state } = useUsersContext();
 
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
@@ -19,6 +21,12 @@ const addClass = () => {
     daysOfWeek: "",
     hoursOfDay: "",
   });
+
+  useEffect(() => {
+    const userId = state.user ? state.user._id : null;
+    console.log("User ID in AddClass:", userId);
+  }, [state]);
+
   const validateDate = (date) => {
     // Regex to match mm/dd/yyyy format
     const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
@@ -81,9 +89,19 @@ const addClass = () => {
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
+  useEffect(() => {
+    const userId = state.user ? state.user._id : null;
+    console.log("User ID:", userId);
+  }, [state]);
+  useEffect(() => {
+    console.log("Current User State AddClass:", state);
+  }, [state]);
+
+  const userId = state.user ? state.user._id : null;
 
   const handleSubmit = async () => {
-    if (validateForm()) {
+    if (validateForm() && userId) {
+      console.log("Form verified");
       const classObj = {
         classTitle: form.classTitle,
         classNumber: form.classNumber,
@@ -94,7 +112,9 @@ const addClass = () => {
         areaOfStudy: form.areaOfStudy,
         daysOfWeek: form.daysOfWeek,
         hoursOfDay: form.hoursOfDay,
+        userId: userId,
       };
+      console.log("Class Object to Submit:", classObj);
 
       try {
         const response = await fetch("http://192.168.0.204:4000/api/classes", {

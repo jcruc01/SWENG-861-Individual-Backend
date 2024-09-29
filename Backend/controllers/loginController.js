@@ -25,6 +25,7 @@ const authenticateLogin = async (req, res) => {
     return res.status(200).json({
       name: user.name,
       username: user.username,
+      _id: user._id,
     });
   } catch (err) {
     return res.status(500).json({ error: "Server error" });

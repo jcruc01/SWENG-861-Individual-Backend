@@ -9,14 +9,14 @@ const {
 const isAuthenticated = require("../middleware/isAuthenticated");
 const router = express.Router();
 
-router.get("/", isAuthenticated, getAllClasses);
+router.get("/", getAllClasses);
 
-router.get("/:id", isAuthenticated,  getClass);
+router.get("/:id", getClass);
 
-router.post("/", isAuthenticated,   createClass);
+router.post("/", createClass);
 
-router.delete("/:id", isAuthenticated,   deleteClass);
+router.delete("/:id", deleteClass);
 
-router.patch("/:id", isAuthenticated,   updateClass);
+router.patch("/:id", updateClass);
 
 module.exports = router;

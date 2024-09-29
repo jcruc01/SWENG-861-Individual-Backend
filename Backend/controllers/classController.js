@@ -2,14 +2,14 @@ const { Class } = require("../models/classModels");
 const mongoose = require("mongoose");
 //get all classes
 const getAllClasses = async (req, res) => {
-  const userID = req.user._id;
-  const allClasses = await Class.find({userID}).sort({ createdAt: -1 });
+  const userID = req.session.user?.id;
+  const allClasses = await Class.find({ userID }).sort({ createdAt: -1 });
   res.status(200).json(allClasses);
 };
 // get single class
 const getClass = async (req, res) => {
   const { id } = req.params;
-  const userID = req.user._id;
+  const userID = req.session.user?.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Class does not exist" });
@@ -35,9 +35,8 @@ const createClass = async (req, res) => {
     areaOfStudy,
     daysOfWeek,
     hoursOfDay,
+    userId,
   } = req.body;
-
-  const userId = req.user._id;
 
   try {
     const newClass = await Class.create({
@@ -50,6 +49,7 @@ const createClass = async (req, res) => {
       areaOfStudy,
       daysOfWeek,
       hoursOfDay,
+      userId,
     });
     res.status(200).json(newClass);
   } catch (error) {
@@ -60,24 +60,32 @@ const createClass = async (req, res) => {
 //delete class
 const deleteClass = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user._id;
+  const userId = req.query.userId;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Class does not exist" });
   }
 
-  const deleteClass = await Class.findOneAndDelete({ _id: id, userID });
+  try {
+    const deletedClass = await Class.findOneAndDelete({ _id: id, userId });
 
-  if (!deleteClass) {
-    return res.status(404).json({ error: "Class does not exist" });
+    if (!deletedClass) {
+      return res
+        .status(404)
+        .json({ error: "Class does not exist or does not belong to the user" });
+    }
+
+    res.status(200).json(deletedClass);
+  } catch (error) {
+    console.error("Error deleting class:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-
-  res.status(200).json(deleteClass);
 };
+
 //update class
 const updateClass = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user._id;
+  const userId = req.session.user?.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Class does not exist" });
@@ -86,7 +94,7 @@ const updateClass = async (req, res) => {
   const updateClass = await Class.findOneAndUpdate(
     { _id: id, userId },
     { ...req.body },
-    { new: true } 
+    { new: true }
   );
 
   if (!updateClass) {

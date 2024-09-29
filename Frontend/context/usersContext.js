@@ -2,32 +2,26 @@ import { createContext, useReducer } from "react";
 
 export const UsersContext = createContext();
 
-export const UsersReducer = (state, action) => {
+const SET_CURRENT_USER = "SET_CURRENT_USER";
+const CLEAR_CURRENT_USER = "CLEAR_CURRENT_USER";
+
+const currentUserReducer = (state, action) => {
+  console.log("Reducer Action:", action);
   switch (action.type) {
-    case "SET_USERS":
-      return {
-        users: action.payload,
-      };
-    case "CREATE_USER":
-      return {
-        users: [action.payload, ...state.users],
-      };
-    case "DELETE_USER":
-      return {
-        users: state.users.filter((c) => c._id !== action.payload._id),
-      };
+    case SET_CURRENT_USER:
+      return { user: action.payload };
+    case CLEAR_CURRENT_USER:
+      return { user: null };
     default:
       return state;
   }
 };
 
-export const UsersContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(UsersReducer, {
-    users: [],
-  });
+export const CurrentUserProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(currentUserReducer, { user: null });
 
   return (
-    <UsersContext.Provider value={{ ...state, dispatch }}>
+    <UsersContext.Provider value={{ state, dispatch }}>
       {children}
     </UsersContext.Provider>
   );

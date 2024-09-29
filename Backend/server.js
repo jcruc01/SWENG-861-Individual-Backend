@@ -10,18 +10,19 @@ const { usersDBConnection } = require("./models/userModels");
 
 const session = require("express-session");
 
-
 const App = express();
 
 App.use(cors());
 App.use(express.json());
 
-App.use(session({
-  secret: 'GrCJmD321',  
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }  
-}))
+App.use(
+  session({
+    secret: "GrCJmD321",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 
 App.use("/api/classes", classRoutes);
 App.use("/api/users", userRoutes);

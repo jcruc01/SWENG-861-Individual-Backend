@@ -1,22 +1,24 @@
 import { View, Text, StyleSheet, Image } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "../../assets/logo.png";
 import LoginForm from "../../components/loginForm";
 import CustomButton from "../../components/CustomButton";
 import { Link, router } from "expo-router";
 import { TouchableOpacity } from "react-native";
+import { useUsersContext } from "../../hooks/useUsersContext";
 
 const SignIn = () => {
   const [form, setForm] = useState({
     username: "",
     password: "",
   });
-
+  const { dispatch, state } = useUsersContext();
   const [isSubmitting, setisSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const submit = async () => {
     let errors = {};
+    setisSubmitting(true);
     if (!validateForm()) return;
     try {
       const response = await fetch("http://192.168.0.204:4000/api/login", {
@@ -29,26 +31,35 @@ const SignIn = () => {
           "Content-Type": "application/json",
         },
       });
-      const json = await response.json();
-
+      const user = await response.json();
+      console.log("User object from API:", user);
       if (!response.ok) {
-        if (json.error === "Invalid Password") {
+        if (user.error === "Invalid Password") {
           errors.password = "Wrong Password";
-        } else if (json.error === "User not found") {
+        } else if (user.error === "User not found") {
           errors.username = "User does not exist";
         }
         setErrors(errors);
       } else {
         setErrors({});
+        dispatch({ type: "SET_CURRENT_USER", payload: user });
+
         router.push({
           pathname: "../(tabs)/dashboard",
-          params: { name: json.name },
+          params: { name: user.name },
         });
       }
     } catch (err) {
       console.error("Error:", err);
+    } finally {
+      setisSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    const userId = state.user ? state.user._id : null;
+    console.log("User ID:", userId);
+  }, [state]);
 
   const validatePassword = (password) => {
     // Regex to match mm/dd/yyyy format
@@ -75,6 +86,10 @@ const SignIn = () => {
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
+  useEffect(() => {
+    console.log("Current User State:", state);
+  }, [state]);
 
   return (
     <SafeAreaView style={styles.main}>

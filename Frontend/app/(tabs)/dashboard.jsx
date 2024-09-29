@@ -9,16 +9,18 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import React, { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import ClassDetails from "../../components/classDetails";
 import { useClassesContext } from "../../hooks/useClassesContext";
+import { useUsersContext } from "../../hooks/useUsersContext";
+
 import Logo from "../../assets/delete-symbol-option.png";
 const Dashboard = () => {
-  const { name } = useLocalSearchParams();
+  const { state } = useUsersContext();
   const [activeSection, setActiveSection] = useState("Home");
   const [selectedClass, setSelectedClass] = useState(null);
   const { classes, dispatch } = useClassesContext();
-
+  const name = "Phil";
   useEffect(() => {
     const fetchClasses = async () => {
       const response = await fetch("http://192.168.0.204:4000/api/classes");
@@ -31,6 +33,11 @@ const Dashboard = () => {
 
     fetchClasses();
   }, []);
+
+  useEffect(() => {
+    const userId = state.user ? state.user._id : null;
+    console.log("User ID:", userId);
+  }, [state]);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -49,6 +56,9 @@ const Dashboard = () => {
         <Text style={styles.headerTitle}>
           Welcome to the Dashboard, {name}!
         </Text>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.featuresContainer}>
         <PressableFeatureBox
@@ -66,9 +76,13 @@ const Dashboard = () => {
       <Text style={styles.featureName}>{name}</Text>
     </TouchableOpacity>
   );
+
+  //get user state for delete
+  const userId = state.user ? state.user._id : null;
+
   const handleDeletePress = async (classItem) => {
     const response = await fetch(
-      "http://192.168.0.204:4000/api/classes/" + classItem._id,
+      `http://192.168.0.204:4000/api/classes/${classItem._id}?userId=${userId}`,
       { method: "DELETE" }
     );
     const json = await response.json();
@@ -77,6 +91,17 @@ const Dashboard = () => {
       dispatch({ type: "DELETE_CLASS", payload: json });
     }
   };
+
+  const handleLogout = () => {
+    dispatch({ type: "CLEAR_CURRENT_USER" });
+    router.push({
+      pathname: "../(auth)/sign-in",
+    });
+  };
+  const userClasses = classes.filter(
+    (classItem) => classItem.userId === userId
+  );
+
   const ClassesSection = () => (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -91,8 +116,8 @@ const Dashboard = () => {
       <ScrollView style={styles.scroll}>
         <View style={styles.contentContainer}>
           <Text style={styles.contentTitle}>Upcoming Classes</Text>
-          {classes &&
-            classes.map((classItem) => (
+          {userClasses.length > 0 ? ( // Check if userClasses has any items
+            userClasses.map((classItem) => (
               <TouchableOpacity
                 style={styles.classItemContainer}
                 key={classItem._id}
@@ -102,9 +127,7 @@ const Dashboard = () => {
                 }}
               >
                 <View style={styles.classItemContent}>
-                  <Text key={classItem._id} style={styles.classTitle}>
-                    {classItem.classTitle}
-                  </Text>
+                  <Text style={styles.classTitle}>{classItem.classTitle}</Text>
                   <TouchableOpacity
                     onPress={() => handleDeletePress(classItem)}
                     style={styles.deleteButton}
@@ -113,7 +136,10 @@ const Dashboard = () => {
                   </TouchableOpacity>
                 </View>
               </TouchableOpacity>
-            ))}
+            ))
+          ) : (
+            <Text style={styles.contentText}>No classes available.</Text> // Message if no classes are found
+          )}
         </View>
       </ScrollView>
     </View>
@@ -257,7 +283,23 @@ const Dashboard = () => {
       width: 24,
       height: 24,
     },
+    logoutButton: {
+      marginTop: 10,
+      backgroundColor: "#e74c3c", // Red color for the logout button
+      padding: 10,
+      borderRadius: 5,
+      alignItems: "center",
+    },
+
+    logoutButtonText: {
+      color: "white",
+      fontWeight: "bold",
+      fontSize: 16,
+    },
   });
+  useEffect(() => {
+    console.log("Current User State Dashboard:", state);
+  }, [state]);
 
   return (
     <>

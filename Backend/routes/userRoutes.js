@@ -9,14 +9,14 @@ const {
 const isAuthenticated = require("../middleware/isAuthenticated");
 const router = express.Router();
 
-router.get("/", isAuthenticated,   getAllUsers);
+router.get("/", getAllUsers);
 
-router.get("/:id", isAuthenticated,   getUser);
+router.get("/:id", getUser);
 
-router.post("/", isAuthenticated,   createUser);
+router.post("/", createUser);
 
-router.delete("/:id", isAuthenticated,   deleteUser);
+router.delete("/:id", deleteUser);
 
-router.patch("/:id", isAuthenticated,   updateUser);
+router.patch("/:id", updateUser);
 
 module.exports = router;
