@@ -1,6 +1,7 @@
 const { User } = require("../models/userModels");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const validator = require("validator");
 
 const saltRounds = 10;
 
@@ -29,13 +30,16 @@ const getUser = async (req, res) => {
 const createUser = async (req, res) => {
   const { username, password, name } = req.body;
 
+  const sanitizedUsername = validator.escape(username).trim();
+  const sanitizedName = validator.escape(name).trim();
+
   try {
-    const hasedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = await User.create({
-      username,
-      password: hasedPassword,
-      name,
+      username: sanitizedUsername,
+      password: hashedPassword,
+      name: sanitizedName,
     });
     res.status(200).json(newUser);
   } catch (error) {

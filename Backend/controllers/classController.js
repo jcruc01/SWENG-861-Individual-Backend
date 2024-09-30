@@ -2,14 +2,17 @@ const { Class } = require("../models/classModels");
 const mongoose = require("mongoose");
 //get all classes
 const getAllClasses = async (req, res) => {
-  const userID = req.session.user?.id;
-  const allClasses = await Class.find({ userID }).sort({ createdAt: -1 });
+  const userId = req.query.userId;
+  const allClasses = await Class.find({ userId: userId }).sort({
+    createdAt: -1,
+  });
   res.status(200).json(allClasses);
 };
+
 // get single class
 const getClass = async (req, res) => {
   const { id } = req.params;
-  const userID = req.session.user?.id;
+  const userId = req.query.userId;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "Class does not exist" });

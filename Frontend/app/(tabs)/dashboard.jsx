@@ -21,18 +21,39 @@ const Dashboard = () => {
   const [selectedClass, setSelectedClass] = useState(null);
   const { classes, dispatch } = useClassesContext();
   const name = state.user.name;
+  const userId = state.user ? state.user._id : null;
+
   useEffect(() => {
     const fetchClasses = async () => {
-      const response = await fetch("http://192.168.0.204:4000/api/classes");
-      const json = await response.json();
+      if (!userId) {
+        console.error("No userId available, unable to fetch classes.");
+        return;
+      }
 
-      if (response.ok) {
-        dispatch({ type: "SET_CLASSES", payload: json });
+      try {
+        const response = await fetch(
+          `http://192.168.0.204:4000/api/classes?userId=${userId}`
+        );
+        const json = await response.json();
+
+        console.log("Fetch Response Status:", response.status); // Log status code
+
+        if (!response.ok) {
+          console.error("Failed to fetch classes:", json); // Log if response is not OK
+        }
+
+        console.log("Fetched Classes Data:", json); // Log the fetched data
+
+        if (response.ok) {
+          dispatch({ type: "SET_CLASSES", payload: json });
+        }
+      } catch (error) {
+        console.error("Error fetching classes:", error); // Log any errors
       }
     };
 
     fetchClasses();
-  }, []);
+  }, [state.user, dispatch]);
 
   useEffect(() => {
     const userId = state.user ? state.user._id : null;
@@ -77,9 +98,6 @@ const Dashboard = () => {
     </TouchableOpacity>
   );
 
-  //get user state for delete
-  const userId = state.user ? state.user._id : null;
-
   const handleDeletePress = async (classItem) => {
     const response = await fetch(
       `http://192.168.0.204:4000/api/classes/${classItem._id}?userId=${userId}`,
@@ -98,9 +116,22 @@ const Dashboard = () => {
       pathname: "../(auth)/sign-in",
     });
   };
-  const userClasses = classes.filter(
-    (classItem) => classItem.userId === userId
-  );
+
+  useEffect(() => {
+    console.log("User ID:", userId); // Check if userId is populated correctly
+    console.log("Classes:", classes); // Check if classes are fetched correctly
+    classes.forEach((classItem) => {
+      console.log(`Class ID: ${classItem._id}, User ID: ${classItem.userId}`); // Log each class's userId
+    });
+  }, [userId, classes]);
+
+  const userClasses = userId
+    ? classes.filter((classItem) => classItem.userId === userId)
+    : [];
+
+  useEffect(() => {
+    console.log("Filtered User Classes:", userClasses); // Check if classes are correctly filtered by userId
+  }, [userClasses]);
 
   const ClassesSection = () => (
     <View style={styles.container}>

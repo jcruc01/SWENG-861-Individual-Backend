@@ -6,7 +6,6 @@ const {
   deleteClass,
   updateClass,
 } = require("../controllers/classController");
-const isAuthenticated = require("../middleware/isAuthenticated");
 const router = express.Router();
 
 router.get("/", getAllClasses);
