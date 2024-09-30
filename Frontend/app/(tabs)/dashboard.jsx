@@ -20,7 +20,7 @@ const Dashboard = () => {
   const [activeSection, setActiveSection] = useState("Home");
   const [selectedClass, setSelectedClass] = useState(null);
   const { classes, dispatch } = useClassesContext();
-  const name = "Phil";
+  const name = state.user.name;
   useEffect(() => {
     const fetchClasses = async () => {
       const response = await fetch("http://192.168.0.204:4000/api/classes");
