@@ -61,7 +61,7 @@ const SignUp = () => {
   };
 
   const validatePassword = (password) => {
-    // Regex to match mm/dd/yyyy format
+    // Regular expression to match mm/dd/yyyy format
     const regex =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     return regex.test(password);

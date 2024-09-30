@@ -117,21 +117,9 @@ const Dashboard = () => {
     });
   };
 
-  useEffect(() => {
-    console.log("User ID:", userId); // Check if userId is populated correctly
-    console.log("Classes:", classes); // Check if classes are fetched correctly
-    classes.forEach((classItem) => {
-      console.log(`Class ID: ${classItem._id}, User ID: ${classItem.userId}`); // Log each class's userId
-    });
-  }, [userId, classes]);
-
   const userClasses = userId
     ? classes.filter((classItem) => classItem.userId === userId)
     : [];
-
-  useEffect(() => {
-    console.log("Filtered User Classes:", userClasses); // Check if classes are correctly filtered by userId
-  }, [userClasses]);
 
   const ClassesSection = () => (
     <View style={styles.container}>
@@ -147,13 +135,13 @@ const Dashboard = () => {
       <ScrollView style={styles.scroll}>
         <View style={styles.contentContainer}>
           <Text style={styles.contentTitle}>Upcoming Classes</Text>
-          {userClasses.length > 0 ? ( // Check if userClasses has any items
+          {userClasses.length > 0 ? (
             userClasses.map((classItem) => (
               <TouchableOpacity
                 style={styles.classItemContainer}
                 key={classItem._id}
                 onPress={() => {
-                  setSelectedClass(classItem); // Set selected class
+                  setSelectedClass(classItem);
                   setActiveSection("IndividualClass");
                 }}
               >
@@ -169,7 +157,7 @@ const Dashboard = () => {
               </TouchableOpacity>
             ))
           ) : (
-            <Text style={styles.contentText}>No classes available.</Text> // Message if no classes are found
+            <Text style={styles.contentText}>No classes available.</Text>
           )}
         </View>
       </ScrollView>

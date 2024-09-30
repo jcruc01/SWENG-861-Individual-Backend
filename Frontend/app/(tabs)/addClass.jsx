@@ -28,7 +28,7 @@ const addClass = () => {
   }, [state]);
 
   const validateDate = (date) => {
-    // Regex to match mm/dd/yyyy format
+    // Regular expression to match mm/dd/yyyy format
     const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
     return regex.test(date);
   };

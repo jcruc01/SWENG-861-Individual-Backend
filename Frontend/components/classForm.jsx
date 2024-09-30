@@ -53,9 +53,9 @@ const classForm = ({
           value={value}
           placeholder={placeholder}
           placeholderTextColor="#888"
-          onChangeText={isDate ? handleDateInput : handleChangeText} // Use the date formatter if it's a date field
-          keyboardType={isDate ? "numeric" : "default"} // Numeric keyboard for dates
-          maxLength={isDate ? 10 : undefined} // Limit date input to 10 characters
+          onChangeText={isDate ? handleDateInput : handleChangeText}
+          keyboardType={isDate ? "numeric" : "default"}
+          maxLength={isDate ? 10 : undefined}
           onContentSizeChange={(event) =>
             setInputHeight(event.nativeEvent.contentSize.height)
           }
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    elevation: 2, // Add shadow for iOS and Android
+    elevation: 2,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -95,6 +95,6 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 16,
     color: "#333",
-    textAlignVertical: "top", // Ensure text starts at the top
+    textAlignVertical: "top",
   },
 });

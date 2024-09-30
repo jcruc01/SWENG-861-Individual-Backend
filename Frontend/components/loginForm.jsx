@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Image,
 } from "react-native";
 import { useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
